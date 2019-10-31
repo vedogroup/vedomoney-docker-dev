@@ -1,0 +1,32 @@
+# From PHP 7 FPM based on Alpine Linux
+FROM php:7-fpm-alpine
+
+# Maintainer
+MAINTAINER Abel Moreno <abel.moreno.acevedo@gmail.com>
+
+# Install dependencies 
+RUN apk update && apk add autoconf openssl-dev g++ make zip libzip-dev bash libpng-dev gcc make 
+RUN apk --update add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/v3.6/main curl curl-dev \ 
+	&& docker-php-ext-install mysqli pdo pdo_mysql zip
+
+# Laravel Requirements
+RUN apk add php7-bcmath php7-ctype php7-json php7-mbstring php7-openssl php7-pdo php7-pdo_mysql php7-tokenizer php7-xml php7-mysqli
+
+# Install composer
+RUN apk add composer 
+
+# Install laravel
+RUN composer global require "laravel/installer" 
+ENV PATH="/root/.composer/vendor/bin:${PATH}"
+
+# Install Xdebug
+RUN apk add --no-cache $PHPIZE_DEPS \
+    && pecl install xdebug \
+    && docker-php-ext-enable xdebug
+
+# Install NodeJs
+RUN apk update; 
+RUN apk add nodejs; 
+RUN apk add npm;
+
+ENV LANG en_US.utf8 
